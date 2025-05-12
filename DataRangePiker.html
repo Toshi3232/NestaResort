@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top">
+    <style>
+      body {
+        font-family: sans-serif;
+        padding: 20px;
+      }
+      .form-group {
+        margin-bottom: 12px;
+      }
+      label {
+        display: block;
+        margin-bottom: 4px;
+      }
+      input[type="date"] {
+        padding: 6px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+      button {
+        padding: 8px 16px;
+        font-size: 14px;
+      }
+    </style>
+  </head>
+  <body>
+    <h2>日付範囲を選択</h2>
+
+    <div class="form-group">
+      <label for="startDate">開始日:</label>
+      <input type="date" id="startDate" required>
+    </div>
+
+    <div class="form-group">
+      <label for="endDate">終了日:</label>
+      <input type="date" id="endDate" required>
+    </div>
+
+    <button onclick="submitDateRange()">期間指定分析開始</button>
+
+    <script>
+      function submitDateRange() {
+        var startDate = document.getElementById('startDate').value;
+        var endDate = document.getElementById('endDate').value;
+
+        if (!startDate || !endDate) {
+          alert('開始日と終了日を選択してください。');
+          return;
+        }
+
+        // 日付の妥当性チェック
+        if (new Date(startDate) > new Date(endDate)) {
+          alert('開始日は終了日より前である必要があります。');
+          return;
+        }
+
+        // 実行ログ
+        console.log('分析開始:', startDate, endDate);
+
+        // 正しいGAS関数を呼ぶ
+        google.script.run
+          .withSuccessHandler(function() {
+            console.log('分析完了');
+            google.script.host.close();
+          })
+          .withFailureHandler(function(error) {
+            console.error('分析エラー:', error);
+            alert('分析に失敗しました: ' + error.message);
+          })
+          .processDateRange(startDate, endDate);
+      }
+    </script>
+  </body>
